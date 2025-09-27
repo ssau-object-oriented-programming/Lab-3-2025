@@ -93,7 +93,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunctionImpl {
             throw new FunctionPointIndexOutOfBoundsException("Индекс " + index + " выходит за границы [0, " + (pointsCount - 1) + "]");
         }
         
-        if (lastAccessedNode == null || lastAccessedIndex < 0 || lastAccessedIndex >= pointsCount) {
+        if (lastAccessedNode == null || lastAccessedIndex < 0 || lastAccessedIndex >= pointsCount || pointsCount == 0) {
             lastAccessedNode = head.getNext();
             lastAccessedIndex = 0;
         }
@@ -112,10 +112,12 @@ public class LinkedListTabulatedFunction implements TabulatedFunctionImpl {
             if (index > lastAccessedIndex) {
                 for (int i = lastAccessedIndex; i < index; i++) {
                     targetNode = targetNode.getNext();
+                    if (targetNode == head) break;
                 }
             } else if (index < lastAccessedIndex) {
                 for (int i = lastAccessedIndex; i > index; i--) {
                     targetNode = targetNode.getPrev();
+                    if (targetNode == head) break;
                 }
             }
         } else if (distanceFromHead <= distanceFromTail) {
@@ -123,12 +125,14 @@ public class LinkedListTabulatedFunction implements TabulatedFunctionImpl {
             newLastIndex = 0;
             for (int i = 0; i < index; i++) {
                 targetNode = targetNode.getNext();
+                if (targetNode == head) break;
             }
         } else {
             targetNode = head.getPrev();
             newLastIndex = pointsCount - 1;
             for (int i = pointsCount - 1; i > index; i--) {
                 targetNode = targetNode.getPrev();
+                if (targetNode == head) break;
             }
         }
         
