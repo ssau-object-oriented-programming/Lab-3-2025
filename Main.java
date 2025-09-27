@@ -95,9 +95,11 @@ public class Main {
         }
         
         try {
-            function.deletePoint(0);
-            function.deletePoint(0);
-            function.deletePoint(0);
+            TabulatedFunctionImpl testFunction = new ArrayTabulatedFunction(0, 10, 5);
+            testFunction.deletePoint(0);
+            testFunction.deletePoint(0);
+            testFunction.deletePoint(0);
+            testFunction.deletePoint(0);
         } catch (IllegalStateException e) {
             System.out.println("Поймано IllegalStateException для недостаточного количества точек: " + e.getMessage());
         }
