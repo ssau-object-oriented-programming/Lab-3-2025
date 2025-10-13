@@ -41,7 +41,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
         }
     }
 
-    public FunctionNode getNodeByIndex(int index) {
+    private FunctionNode getNodeByIndex(int index) {
         if (index < 0 || index >= len) {
             throw new FunctionPointIndexOutOfBoundsException("Индекс вне интервала");
         }
@@ -59,7 +59,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
         return cur;
     }
 
-    public FunctionNode addNodeToTail(FunctionPoint point) {
+    private FunctionNode addNodeToTail(FunctionPoint point) {
         FunctionNode Node = new FunctionNode(point); //создали новый узел
         if (head.getNext() == null) { //если список пустой
             head.setNext(Node);
@@ -77,7 +77,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
         return Node;
     }
 
-    public FunctionNode addNodeByIndex(int index, FunctionPoint point) { //добавление узла по индексу
+    private FunctionNode addNodeByIndex(int index, FunctionPoint point) { //добавление узла по индексу
         if (index < 0 || index > len) {
             throw new FunctionPointIndexOutOfBoundsException("Индекс вне интервала");
         }
@@ -95,7 +95,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
         return cur;
     }
 
-    public FunctionNode deleteNodeByIndex(int index) {
+    private FunctionNode deleteNodeByIndex(int index) {
         if (index < 0 || index >= len) {
             throw new FunctionPointIndexOutOfBoundsException("Индекс вне интервала");
         }
