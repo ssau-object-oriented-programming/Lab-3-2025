@@ -25,6 +25,8 @@ public class Main {
         System.out.println("После удаления точки:");
         arrayFunction.printTabulatedFunction();
 
+
+
         // Проверка выбросов исключений
         try {
             arrayFunction.getPoint(100);
@@ -65,6 +67,17 @@ public class Main {
         listFunction.deletePoint(3);
         System.out.println("После удаления точки:");
         listFunction.printTabulatedFunction();
+
+        //Проверка getFunctionValue
+        double[] testPoints = {-0.8, -0.2, 0.2, 0.6, 1.5};
+
+        for (double x : testPoints) {
+            try {
+                System.out.println("f(" + x + ") = " + listFunction.getFunctionValue(x));
+            } catch (InappropriateFunctionPointException e) {
+                System.out.println("f(" + x + ") Поймано исключение: " + e);
+            }
+        }
 
         // Проверка выбросов исключений
         try {

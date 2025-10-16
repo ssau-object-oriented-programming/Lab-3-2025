@@ -235,11 +235,12 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     }
 
     //удаление элемента в списке по указанному индексу
-    private void deleteNodeByIndex(int index) {
+    private FunctionNode deleteNodeByIndex(int index) {
         FunctionNode node = getNodeByIndex(index);
         node.prev.next = node.next;
         node.next.prev = node.prev;
         size--;
+        return node;
     }
 
     //Метод вывода
