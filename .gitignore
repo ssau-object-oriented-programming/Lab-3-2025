@@ -1,0 +1,34 @@
+# Compiled class files
+*.class
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# VS Code specific
+.vscode/
+
+# Eclipse specific
+.classpath
+.project
+.settings/
+
+# Maven specific
+target/
+
+# Gradle specific
+build/
+.gradle/
+
+# IntelliJ specific
+*.iml
+*.ipr
+*.iws
+.idea/
