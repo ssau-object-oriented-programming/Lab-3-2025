@@ -4,6 +4,14 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
     private int size;                 // текущее количество точек
     private FunctionPoint[] points;   // упорядоченный по х массив точек
 
+    private static final double EPSILON = 1e-9;
+
+    private static boolean eq(double a, double b) { return Math.abs(a - b) <= EPSILON; }
+    private static boolean lt(double a, double b) { return a <  b - EPSILON; }
+    private static boolean gt(double a, double b) { return a >  b + EPSILON; }
+    private static boolean le(double a, double b) { return a <= b + EPSILON; }
+    private static boolean ge(double a, double b) { return a >= b - EPSILON; }
+
     // Проверка индекса на валидность
     // Исключение, если индекс вне [0, size - 1]
     private void requireIndex(int index) {
@@ -71,22 +79,24 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
     //Если x вне интервала возвращается NaN
     //Если x совпадает с одной из абсцисс, возвращается соответствующее y
     //Иначе применяется линейная интерполяция по найденному отрезку
+
+    // Исправлено теперь сравнение с машинным эпсилон
     @Override
     public double getFunctionValue(double x) {
         if (size == 0) return Double.NaN;
         double left = points[0].getX();
         double right = points[size - 1].getX();
-        if (x < left || x > right) return Double.NaN;
+        if (lt(x, left) || gt(x, right)) return Double.NaN;
 
         // точное совпадение
         for (int i = 0; i < size; ++i) {
-            if (x == points[i].getX()) return points[i].getY();
+            if (eq(x, points[i].getX())) return points[i].getY();
         }
         // интервал [xi, xi+1]
         for (int i = 0; i < size - 1; ++i) {
             double x0 = points[i].getX(), y0 = points[i].getY();
             double x1 = points[i + 1].getX(), y1 = points[i + 1].getY();
-            if (x >= x0 && x <= x1) {
+            if (ge(x, x0) && le(x, x1)) {
                 return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
             }
         }
@@ -98,20 +108,19 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
         requireIndex(index);
         return new FunctionPoint(points[index]);
     }
-    // Заменяет точку по индексу на переданную
+    // Заменяет точку по индексу на переданную, Исправлено теперь сравнение с машинным эпсилон
     @Override
     public void setPoint(int index, FunctionPoint point) throws InappropriateFunctionPointException {
         if (point == null) return;
         requireIndex(index);
-
         double newX = point.getX();
         if (index > 0) {
             double leftX = points[index - 1].getX();
-            if (!(newX > leftX)) throw new InappropriateFunctionPointException("x must be > left neighbor");
+           if (!gt(newX, leftX)) throw new InappropriateFunctionPointException("x must be > left neighbor");
         }
         if (index < size - 1) {
             double rightX = points[index + 1].getX();
-            if (!(newX < rightX)) throw new InappropriateFunctionPointException("x must be < right neighbor");
+             if (!lt(newX, rightX)) throw new InappropriateFunctionPointException("x must be < right neighbor");
         }
         points[index] = new FunctionPoint(point); // копия (инкапсуляция)
     }
@@ -127,26 +136,21 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
         requireIndex(index);
         if (size == 1) {
             points[0].setX(x);
-            return;
-        }
-
+            return;}
         if (index == 0) {
             double nextX = points[1].getX();
-            if (x >= nextX) throw new InappropriateFunctionPointException("x must be < right neighbor");
+            if (!lt(x, nextX)) throw new InappropriateFunctionPointException("x must be < right neighbor");
             points[0].setX(x);
-            return;
-        }
+            return;}
         if (index == size - 1) {
             double prevX = points[size - 2].getX();
-            if (x <= prevX) throw new InappropriateFunctionPointException("x must be > left neighbor");
+            if (!gt(x, prevX)) throw new InappropriateFunctionPointException("x must be > left neighbor");
             points[size - 1].setX(x);
-            return;
-        }
+            return;}
         double leftX = points[index - 1].getX();
         double rightX = points[index + 1].getX();
-        if (x <= leftX || x >= rightX) {
-            throw new InappropriateFunctionPointException("x must be strictly between neighbors");
-        }
+        if (!(gt(x, leftX) && lt(x, rightX))) {
+            throw new InappropriateFunctionPointException("x must be strictly between neighbors");}
         points[index].setX(x);
     }
     // Ордината y точки по индексу
@@ -173,18 +177,19 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
         //Добавляет новую точку и сохраняет порядок по x
         //Если абсцисса x уже присутствует в таблице, бросает InappropriateFunctionPointException.
         //При нехватке места расширяет буфер по правилу 1.5x + 1.
+    //  Теперь сравнение с машинным эпсилон
     @Override
     public void addPoint(FunctionPoint point) throws InappropriateFunctionPointException {
         if (point == null) return;
         double x = point.getX();
         int insertIndex = 0;
-        while (insertIndex < size && points[insertIndex].getX() < x) {insertIndex++;}
-        if (insertIndex < size && points[insertIndex].getX() == x) {
+        while (insertIndex < size && lt(points[insertIndex].getX(), x)) {insertIndex++;}
+        if (insertIndex < size && eq(points[insertIndex].getX(), x)) {
             throw new InappropriateFunctionPointException("duplicate x");
         }
 
-        if (size >= (points == null ? 0 : points.length)) {
-            int newCapacity = (points == null || points.length == 0) ? 2 : (points.length * 3 / 2 + 1);
+        if (size >= points.length) {
+            int newCapacity = (points.length == 0) ? 2 : (points.length * 3 / 2 + 1);
             FunctionPoint[] newArray = new FunctionPoint[newCapacity];
             if (size > 0) System.arraycopy(points, 0, newArray, 0, size);
             points = newArray;}

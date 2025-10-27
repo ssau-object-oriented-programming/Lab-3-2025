@@ -29,8 +29,15 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     // Данные в head не хранятся. Он упрощает вставки и удаления
     private final FunctionNode head;
 
-
     private int size; // Тенкущее количество значимых точек
+
+    private static final double EPSILON = 1e-9;
+
+    private static boolean eq(double a, double b) { return Math.abs(a - b) <= EPSILON; }
+    private static boolean lt(double a, double b) { return a <  b - EPSILON; }
+    private static boolean gt(double a, double b) { return a >  b + EPSILON; }
+    private static boolean le(double a, double b) { return a <= b + EPSILON; }
+    private static boolean ge(double a, double b) { return a >= b - EPSILON; }
 
     // Конструкторы списка
 
@@ -181,18 +188,18 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     // Если x совпадает с одной из абсцисс, возвращается соответствующее y
     // Иначе используется линейная интерполяция по ближайшему отрезку
 
+    // Исправление, теперь сравниваем с машинным эпсилон
     @Override
     public double getFunctionValue(double x) {
         if (size == 0) return Double.NaN;
 
         double left = head.next.point.getX();
         double right = head.prev.point.getX();
-        if (x < left || x > right) return Double.NaN;
-
+        if (lt(x, left) || gt(x, right)) return Double.NaN;
         // точное попадание
         FunctionNode cur = head.next;
         for (int i = 0; i < size; i++) {
-            if (x == cur.point.getX()) return cur.point.getY();
+            if (eq(x, cur.point.getX())) return cur.point.getY();
             cur = cur.next;
         }
 
@@ -203,7 +210,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
             double y0 = cur.point.getY();
             double x1 = cur.next.point.getX();
             double y1 = cur.next.point.getY();
-            if (x >= x0 && x <= x1) {
+            if (ge(x, x0) && le(x, x1)) {
                 return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
             }
             cur = cur.next;
@@ -226,6 +233,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     // Требование: новая абсцисса x должна строго лежать между соседями
     // Получим InappropriateFunctionPointException при нарушении порядка
 
+        // Исправление, теперь сравниваем с машинным эпсилон
     @Override
     public void setPoint(int index, FunctionPoint point) throws InappropriateFunctionPointException {
         if (point == null) return;
@@ -234,13 +242,13 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
 
         if (index > 0) {
             double leftX = node.prev.point.getX();
-            if (!(newX > leftX)) {
+            if (!gt(newX, leftX)) {
                 throw new InappropriateFunctionPointException("x must be > left neighbor");
             }
         }
         if (index < size - 1) {
             double rightX = node.next.point.getX();
-            if (!(newX < rightX)) {
+            if (!lt(newX, rightX)) {
                 throw new InappropriateFunctionPointException("x must be < right neighbor");
             }
         }
@@ -258,6 +266,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     // для средней точки x строго между соседями.
     // Исключение InappropriateFunctionPointException при нарушении этих правил
 
+    // Исправление, теперь сравниваем с машинным эпсилон
     @Override
     public void setPointX(int index, double x) throws InappropriateFunctionPointException {
         FunctionNode node = getNodeByIndex(index);
@@ -266,17 +275,17 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
             return;}
         if (index == 0) {
             double nextX = node.next.point.getX();
-            if (x >= nextX) throw new InappropriateFunctionPointException("x must be < right neighbor");
+            if (!lt(x, nextX)) throw new InappropriateFunctionPointException("x must be < right neighbor");
             node.point.setX(x);
             return;}
         if (index == size - 1) {
             double prevX = node.prev.point.getX();
-            if (x <= prevX) throw new InappropriateFunctionPointException("x must be > left neighbor");
+            if (!gt(x, prevX)) throw new InappropriateFunctionPointException("x must be > left neighbor");
             node.point.setX(x);
             return;}
         double leftX = node.prev.point.getX();
         double rightX = node.next.point.getX();
-        if (x <= leftX || x >= rightX) {
+        if (!(gt(x, leftX) && lt(x, rightX))) {
             throw new InappropriateFunctionPointException("x must be strictly between neighbors");}
         node.point.setX(x);}
 
@@ -307,6 +316,8 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     // Находит позицию вставки как первый элемент, у которого x текущего элемента >= x новой точки
     // При совпадении абсцисс бросает InappropriateFunctionPointException
     // Внутрь вставляется копия переданной точки
+
+    // Сравниваем с машинным эпсилон
     @Override
     public void addPoint(FunctionPoint point) throws InappropriateFunctionPointException {
         if (point == null) return;
@@ -315,12 +326,12 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
 
         int insertIndex = 0;
         FunctionNode cur = head.next;
-        while (insertIndex < size && cur.point.getX() < x) {
+        while (insertIndex < size && lt(cur.point.getX(), x)) {
             cur = cur.next;
             insertIndex++;
         }
         // дубликат x запрещён
-        if (insertIndex < size && cur.point.getX() == x) {
+        if (insertIndex < size && eq(cur.point.getX(), x)) {
             throw new InappropriateFunctionPointException("duplicate x");
         }
         // вставка копии точки в найденную позицию
