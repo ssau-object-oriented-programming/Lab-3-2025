@@ -2,6 +2,7 @@ package functions;
 
 public class ArrayTabulatedFunction implements TabulatedFunction {    private FunctionPoint[] points;
     private int pointsCount;
+    private static final double EPSILON = 1e-10;
 
     public ArrayTabulatedFunction(double leftX, double rightX, int pointsCount) {
         if (leftX >= rightX) {
@@ -48,12 +49,12 @@ public class ArrayTabulatedFunction implements TabulatedFunction {    private Fu
     }
 
     public double getFunctionValue(double x) {
-        if (x < getLeftDomainBorder() || x > getRightDomainBorder()) {
+        if (x < getLeftDomainBorder() - EPSILON || x > getRightDomainBorder() + EPSILON) {
             return Double.NaN;
         }
 
         for (int i = 0; i < pointsCount; i++) {
-            if (x == points[i].getX()) {
+            if (Math.abs(x - points[i].getX()) < EPSILON) {
                 return points[i].getY();
             }
         }
@@ -62,7 +63,7 @@ public class ArrayTabulatedFunction implements TabulatedFunction {    private Fu
             double x1 = points[i].getX();
             double x2 = points[i + 1].getX();
 
-            if (x >= x1 && x <= x2) {
+            if (x >= x1 - EPSILON && x <= x2 + EPSILON) {
                 double y1 = points[i].getY();
                 double y2 = points[i + 1].getY();
                 return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
@@ -85,14 +86,16 @@ public class ArrayTabulatedFunction implements TabulatedFunction {    private Fu
 
     public void setPoint(int index, FunctionPoint point) {
         if (index < 0 || index >= pointsCount) {
-            throw new FunctionPointIndexOutOfBoundsException("Индекс " + index + " вне диапазона [0, " + (pointsCount - 1) + "]");
+            throw new FunctionPointIndexOutOfBoundsException(index, pointsCount);
         }
 
-        if (index > 0 && point.getX() <= points[index - 1].getX()) {
-            throw new InappropriateFunctionPointException("X координата " + point.getX() + " должна быть больше предыдущей " + points[index - 1].getX());
+        if (index > 0 && point.getX() <= points[index - 1].getX() + EPSILON) {
+            throw new InappropriateFunctionPointException(
+                    "X координата " + point.getX() + " должна быть больше предыдущей " + points[index - 1].getX());
         }
-        if (index < pointsCount - 1 && point.getX() >= points[index + 1].getX()) {
-            throw new InappropriateFunctionPointException("X координата " + point.getX() + " должна быть меньше следующей " + points[index + 1].getX());
+        if (index < pointsCount - 1 && point.getX() >= points[index + 1].getX() - EPSILON) {
+            throw new InappropriateFunctionPointException(
+                    "X координата " + point.getX() + " должна быть меньше следующей " + points[index + 1].getX());
         }
 
         points[index] = new FunctionPoint(point);
@@ -107,14 +110,16 @@ public class ArrayTabulatedFunction implements TabulatedFunction {    private Fu
 
     public void setPointX(int index, double x) {
         if (index < 0 || index >= pointsCount) {
-            throw new FunctionPointIndexOutOfBoundsException("Индекс " + index + " вне диапазона [0, " + (pointsCount - 1) + "]");
+            throw new FunctionPointIndexOutOfBoundsException(index, pointsCount);
         }
 
-        if (index > 0 && x <= points[index - 1].getX()) {
-            throw new InappropriateFunctionPointException("X координата " + x + " должна быть больше предыдущей " + points[index - 1].getX());
+        if (index > 0 && x <= points[index - 1].getX() + EPSILON) {
+            throw new InappropriateFunctionPointException(
+                    "X координата " + x + " должна быть больше предыдущей " + points[index - 1].getX());
         }
-        if (index < pointsCount - 1 && x >= points[index + 1].getX()) {
-            throw new InappropriateFunctionPointException("X координата " + x + " должна быть меньше следующей " + points[index + 1].getX());
+        if (index < pointsCount - 1 && x >= points[index + 1].getX() - EPSILON) {
+            throw new InappropriateFunctionPointException(
+                    "X координата " + x + " должна быть меньше следующей " + points[index + 1].getX());
         }
 
         points[index].setX(x);
@@ -150,11 +155,11 @@ public class ArrayTabulatedFunction implements TabulatedFunction {    private Fu
 
     public void addPoint(FunctionPoint point) {
         int insertIndex = 0;
-        while (insertIndex < pointsCount && points[insertIndex].getX() < point.getX()) {
+        while (insertIndex < pointsCount && points[insertIndex].getX() < point.getX() - EPSILON) {
             insertIndex++;
         }
 
-        if (insertIndex < pointsCount && points[insertIndex].getX() == point.getX()) {
+        if (insertIndex < pointsCount && Math.abs(points[insertIndex].getX() - point.getX()) < EPSILON) {
             throw new InappropriateFunctionPointException("Точка с X=" + point.getX() + " уже существует");
         }
 

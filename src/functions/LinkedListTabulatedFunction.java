@@ -2,6 +2,8 @@ package functions;
 
 public class LinkedListTabulatedFunction implements TabulatedFunction{
 
+    private static final double EPSILON = 1e-10;
+
 
     private static class FunctionNode {
         FunctionPoint point;
@@ -176,24 +178,26 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
             return Double.NaN;
         }
 
-        if (x < getLeftDomainBorder() || x > getRightDomainBorder()) {
+
+        if (x < getLeftDomainBorder() - EPSILON || x > getRightDomainBorder() + EPSILON) {
             return Double.NaN;
         }
 
         FunctionNode current = head.next;
         for (int i = 0; i < pointsCount; i++) {
-            if (x == current.point.getX()) {
+            if (Math.abs(x - current.point.getX()) < EPSILON) {
                 return current.point.getY();
             }
             current = current.next;
         }
+
 
         current = head.next;
         for (int i = 0; i < pointsCount - 1; i++) {
             double x1 = current.point.getX();
             double x2 = current.next.point.getX();
 
-            if (x >= x1 && x <= x2) {
+            if (x >= x1 - EPSILON && x <= x2 + EPSILON) {
                 double y1 = current.point.getY();
                 double y2 = current.next.point.getY();
                 return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
@@ -274,16 +278,17 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
         deleteNodeByIndex(index);
     }
 
+
     public void addPoint(FunctionPoint point) {
         int insertIndex = 0;
         FunctionNode current = head.next;
 
-        while (insertIndex < pointsCount && current.point.getX() < point.getX()) {
+        while (insertIndex < pointsCount && current.point.getX() < point.getX() - EPSILON) {
             current = current.next;
             insertIndex++;
         }
 
-        if (insertIndex < pointsCount && current.point.getX() == point.getX()) {
+        if (insertIndex < pointsCount && Math.abs(current.point.getX() - point.getX()) < EPSILON) {
             throw new InappropriateFunctionPointException("Точка с X=" + point.getX() + " уже существует");
         }
 
