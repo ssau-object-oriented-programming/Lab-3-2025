@@ -1,65 +1,132 @@
-package functions;
-import functions.FunctionPoint;
-import functions.TabulatedFunction;
+import functions.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("=== Лабораторная работа №2 ===");
+        System.out.println("=== Лабораторная работа №3 ===");
 
-        TabulatedFunction func = new TabulatedFunction(0, 4, new double[]{0, 1, 4, 9, 16});
-        
-        System.out.println("1. Исходная функция:");
+        // Тестирование ArrayTabulatedFunction
+        System.out.println("\n1. Тестирование ArrayTabulatedFunction:");
+        testTabulatedFunction(new ArrayTabulatedFunction(0, 4, new double[]{0, 1, 4, 9, 16}), "Array");
+
+        // Тестирование LinkedListTabulatedFunction
+        System.out.println("\n2. Тестирование LinkedListTabulatedFunction:");
+        testTabulatedFunction(new LinkedListTabulatedFunction(0, 4, new double[]{0, 1, 4, 9, 16}), "Linked List");
+
+        // Тестирование исключений
+        System.out.println("\n3. Тестирование исключений:");
+        testExceptions();
+    }
+
+    private static void testTabulatedFunction(TabulatedFunction func, String type) {
+        System.out.println("   Тип: " + type);
         System.out.println("   Границы: [" + func.getLeftDomainBorder() + ", " + func.getRightDomainBorder() + "]");
         System.out.println("   Количество точек: " + func.getPointsCount());
-        printPoints(func);
-        
-        System.out.println("\n2. Тестирование вычислений функции:");
+
+        // Тестирование вычислений
+        System.out.println("   Тестирование вычислений:");
         double[] testPoints = {-1, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5};
         for (double x : testPoints) {
             double y = func.getFunctionValue(x);
-            System.out.println("   f(" + x + ") = " + y);
+            System.out.println("     f(" + x + ") = " + y);
         }
 
-        System.out.println("\n3. Тестирование сеттеров:");
+        // Тестирование операций с точками
+        System.out.println("   Тестирование операций с точками:");
+        try {
+            func.setPointY(2, 5);
+            System.out.println("     setPointY(2, 5) - успешно");
 
-        System.out.println("   setPointY(2, 5): изменяем Y точки с индексом 2 с 4 на 5");
-        func.setPointY(2, 5);
-        System.out.println("   Результат: (" + func.getPointX(2) + ", " + func.getPointY(2) + ")");
+            func.addPoint(new FunctionPoint(1.5, 2.25));
+            System.out.println("     addPoint(1.5, 2.25) - успешно, точек: " + func.getPointsCount());
 
-        System.out.println("   setPointX(3, 3.5): изменяем X точки с индексом 3 с 3 на 3.5");
-        func.setPointX(3, 3.5);
-        System.out.println("   Результат: (" + func.getPointX(3) + ", " + func.getPointY(3) + ")");
+            func.deletePoint(1);
+            System.out.println("     deletePoint(1) - успешно, точек: " + func.getPointsCount());
 
-        System.out.println("   setPoint(1, new FunctionPoint(1.2, 1.44)): заменяем точку с индексом 1");
-        func.setPoint(1, new FunctionPoint(1.2, 1.44));
-        System.out.println("   Результат: (" + func.getPointX(1) + ", " + func.getPointY(1) + ")");
-        
-        System.out.println("\n4. Функция после изменений через сеттеры:");
-        printPoints(func);
-
-        System.out.println("\n5. Тестирование граничных случаев сеттеров:");
-        System.out.println("   Попытка setPointX(1, 0.5) (нарушение порядка):");
-        double oldX = func.getPointX(1);
-        func.setPointX(1, 0.5);
-        System.out.println("   X остался прежним: " + (func.getPointX(1) == oldX));
-
-        System.out.println("\n6. Добавление и удаление точек:");
-        System.out.println("   Добавляем точку (2.5, 6.25):");
-        func.addPoint(new FunctionPoint(2.5, 6.25));
-        System.out.println("   Точек после добавления: " + func.getPointsCount());
-        
-        System.out.println("   Удаляем точку с индексом 1:");
-        func.deletePoint(1);
-        System.out.println("   Точек после удаления: " + func.getPointsCount());
-        
-        System.out.println("\n7. Финальное состояние функции:");
-        printPoints(func);
+        } catch (Exception e) {
+            System.out.println("     Ошибка: " + e.getMessage());
+        }
     }
-    
-    private static void printPoints(TabulatedFunction func) {
-        System.out.println("   Точки функции:");
-        for (int i = 0; i < func.getPointsCount(); i++) {
-            System.out.println("     [" + i + "] (" + func.getPointX(i) + ", " + func.getPointY(i) + ")");
+
+    private static void testExceptions() {
+        // Тестирование исключений конструкторов
+        System.out.println("   Тестирование конструкторов:");
+
+        try {
+            TabulatedFunction badFunc1 = new ArrayTabulatedFunction(5, 0, 3);
+            System.out.println("     Array: левая граница > правой - ОШИБКА: должно быть исключение");
+        } catch (IllegalArgumentException e) {
+            System.out.println("     Array: левая граница > правой - корректно: " + e.getMessage());
+        }
+
+        try {
+            TabulatedFunction badFunc2 = new LinkedListTabulatedFunction(0, 4, 1);
+            System.out.println("     LinkedList: точек < 2 - ОШИБКА: должно быть исключение");
+        } catch (IllegalArgumentException e) {
+            System.out.println("     LinkedList: точек < 2 - корректно: " + e.getMessage());
+        }
+
+        // Тестирование исключений индексов
+        System.out.println("   Тестирование исключений индексов:");
+        TabulatedFunction func = new ArrayTabulatedFunction(0, 2, 3);
+
+        try {
+            func.getPoint(10);
+            System.out.println("     getPoint(10) - ОШИБКА: должно быть исключение");
+        } catch (FunctionPointIndexOutOfBoundsException e) {
+            System.out.println("     getPoint(10) - корректно: " + e.getMessage());
+        }
+
+        // Тестирование исключений порядка точек
+        System.out.println("   Тестирование исключений порядка точек:");
+
+        try {
+            func.setPointX(1, 0); // Попытка установить X меньше предыдущего
+            System.out.println("     setPointX(1, 0) - ОШИБКА: должно быть исключение");
+        } catch (InappropriateFunctionPointException e) {
+            System.out.println("     setPointX(1, 0) - корректно: " + e.getMessage());
+        }
+
+        try {
+            func.addPoint(new FunctionPoint(1.0, 1.0)); // Попытка добавить точку с существующим X
+            System.out.println("     addPoint(1.0, 1.0) - ОШИБКА: должно быть исключение");
+        } catch (InappropriateFunctionPointException e) {
+            System.out.println("     addPoint(1.0, 1.0) - корректно: " + e.getMessage());
+        }
+
+        // Тестирование исключения состояния
+        System.out.println("   Тестирование исключения состояния:");
+        TabulatedFunction smallFunc = new ArrayTabulatedFunction(0, 1, 2);
+
+        try {
+            smallFunc.deletePoint(0); // Попытка удалить при 2 точках
+            System.out.println("     deletePoint(0) при 2 точках - ОШИБКА: должно быть исключение");
+        } catch (IllegalStateException e) {
+            System.out.println("     deletePoint(0) при 2 точках - корректно: " + e.getMessage());
+        }
+
+        // Демонстрация полиморфизма
+        System.out.println("\n4. Демонстрация полиморфизма:");
+        demonstratePolymorphism();
+    }
+
+    private static void demonstratePolymorphism() {
+        // Работа через интерфейс с разными реализациями
+        TabulatedFunction[] functions = {
+                new ArrayTabulatedFunction(0, 2, new double[]{0, 1, 4}),
+                new LinkedListTabulatedFunction(0, 2, new double[]{0, 1, 4})
+        };
+
+        String[] types = {"Array", "Linked List"};
+
+        for (int i = 0; i < functions.length; i++) {
+            System.out.println("   " + types[i] + " реализация:");
+            System.out.println("     getPointsCount(): " + functions[i].getPointsCount());
+            System.out.println("     getFunctionValue(1.5): " + functions[i].getFunctionValue(1.5));
+
+            // Проверка, что возвращаются копии точек (инкапсуляция)
+            FunctionPoint point = functions[i].getPoint(1);
+            point.setX(999); // Изменение копии не должно влиять на оригинал
+            System.out.println("     После изменения копии, оригинал: " + functions[i].getPointX(1));
         }
     }
 }
