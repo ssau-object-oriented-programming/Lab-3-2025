@@ -22,6 +22,12 @@ public class Main {
         System.out.println("   Границы: [" + func.getLeftDomainBorder() + ", " + func.getRightDomainBorder() + "]");
         System.out.println("   Количество точек: " + func.getPointsCount());
 
+        // Вывод всех точек ДО операций
+        System.out.println("   Исходные точки:");
+        for (int i = 0; i < func.getPointsCount(); i++) {
+            System.out.println("     [" + i + "] (" + func.getPointX(i) + ", " + func.getPointY(i) + ")");
+        }
+
         // Тестирование вычислений
         System.out.println("   Тестирование вычислений:");
         double[] testPoints = {-1, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5};
@@ -30,17 +36,24 @@ public class Main {
             System.out.println("     f(" + x + ") = " + y);
         }
 
-        // Тестирование операций с точками
+        // Тестирование операций
         System.out.println("   Тестирование операций с точками:");
         try {
             func.setPointY(2, 5);
             System.out.println("     setPointY(2, 5) - успешно");
+            System.out.println("     Результат: (" + func.getPointX(2) + ", " + func.getPointY(2) + ")");
 
             func.addPoint(new FunctionPoint(1.5, 2.25));
             System.out.println("     addPoint(1.5, 2.25) - успешно, точек: " + func.getPointsCount());
 
             func.deletePoint(1);
             System.out.println("     deletePoint(1) - успешно, точек: " + func.getPointsCount());
+
+            // Вывод точек ПОСЛЕ операций
+            System.out.println("     Точки после операций:");
+            for (int i = 0; i < func.getPointsCount(); i++) {
+                System.out.println("       [" + i + "] (" + func.getPointX(i) + ", " + func.getPointY(i) + ")");
+            }
 
         } catch (Exception e) {
             System.out.println("     Ошибка: " + e.getMessage());

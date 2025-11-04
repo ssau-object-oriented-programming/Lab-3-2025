@@ -57,6 +57,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
             throw new IllegalArgumentException("Количество точек должно быть не менее 2: " + values.length);
         }
 
+
         double step = (rightX - leftX) / (values.length - 1);
         for (int i = 0; i < values.length; i++) {
             double x = leftX + i * step;
@@ -64,6 +65,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
             newNode.point = new FunctionPoint(x, values[i]);
         }
     }
+
 
     private FunctionNode getNodeByIndex(int index) {
         if (index < 0 || index >= pointsCount) {
@@ -98,7 +100,25 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
     }
 
     private FunctionNode addNodeToTail() {
-        return addNodeByIndex(pointsCount);
+        FunctionNode newNode = new FunctionNode(new FunctionPoint(0, 0));
+
+        if (pointsCount == 0) {
+            newNode.prev = head;
+            newNode.next = head;
+            head.next = newNode;
+            head.prev = newNode;
+        } else {
+            newNode.prev = head.prev;
+            newNode.next = head;
+            head.prev.next = newNode;
+            head.prev = newNode;
+        }
+
+        pointsCount++;
+        lastAccessed = newNode;
+        lastAccessedIndex = pointsCount - 1;
+
+        return newNode;
     }
 
     private FunctionNode addNodeByIndex(int index) {
@@ -174,12 +194,12 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
     }
 
     public double getFunctionValue(double x) {
-        if (pointsCount == 0) {
-            return Double.NaN;
-        }
+        if (pointsCount == 0) return Double.NaN;
 
+        double leftBorder = getLeftDomainBorder();
+        double rightBorder = getRightDomainBorder();
 
-        if (x < getLeftDomainBorder() - EPSILON || x > getRightDomainBorder() + EPSILON) {
+        if (x < leftBorder - EPSILON || x > rightBorder + EPSILON) {
             return Double.NaN;
         }
 
@@ -190,7 +210,6 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
             }
             current = current.next;
         }
-
 
         current = head.next;
         for (int i = 0; i < pointsCount - 1; i++) {
@@ -207,6 +226,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction{
 
         return Double.NaN;
     }
+
 
     public int getPointsCount() {
         return pointsCount;
