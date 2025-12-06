@@ -124,18 +124,22 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     public double getLeftDomainBorder() { return this.getNodeByIndex(0).value.getX();}
     public double getRightDomainBorder() { return this.getNodeByIndex(capacity - 1).value.getX();}
     public double getFunctionValue(double x) {
-        if (x < this.getNodeByIndex(0).value.getX() || x > this.getNodeByIndex(capacity - 1).value.getX()) {return Double.NaN;}
+        if (x < this.head.next.value.getX() || x > this.head.prev.value.getX()) {return Double.NaN;}
+        FunctionNode curNode = head.next;
         for (int t = 0; t < capacity; t++) {
-            if (Math.abs(x - this.getNodeByIndex(t).value.getX()) < DEFAULT_EPSILON) {return this.getNodeByIndex(t).value.getY();}
+            if (Math.abs(x - curNode.value.getX()) < DEFAULT_EPSILON) {return curNode.value.getY();}
+            curNode = curNode.next;
         }
         int t = 0;
-        while (x > this.getNodeByIndex(t).value.getX()) {
-            t++;
+        FunctionNode Node1 = head.next;
+        while (x > Node1.value.getX()) {
+            Node1 = Node1.next;
         }
-        double x0 = this.getNodeByIndex(t - 1).value.getX();
-        double x1 = this.getNodeByIndex(t).value.getX();
-        double y0 = this.getNodeByIndex(t - 1).value.getY();
-        double y1 = this.getNodeByIndex(t).value.getY();
+        FunctionNode Node0 = Node1.prev;
+        double x0 = Node0.value.getX();
+        double x1 = Node1.value.getX();
+        double y0 = Node0.value.getY();
+        double y1 = Node1.value.getY();
         return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
     }
 

@@ -52,13 +52,9 @@ public class Main {
             func_array.addPoint(p2);
         } catch (InappropriateFunctionPointException e) {}
         for (int t = 0; t < func_list.getPointsCount(); t++) {
-            if (Math.abs(func_list.getPointX(t) - func_array.getPointX(t)) > DEFAULT_EPSILON) {
-                System.out.println("Значения X координат точек не совпали");
-            }
-            if (Math.abs(func_list.getPointY(t) - func_array.getPointY(t)) > DEFAULT_EPSILON) {
-                System.out.println("Значения Y координат точек не совпали");
-            }
+            System.out.printf("x_array=%.2f x_list=%.2f y_array=%.2f y_list=%.2f%n", func_array.getPointX(t), func_list.getPointX(t), func_array.getPointY(t), func_list.getPointY(t));
         }
+        System.out.println();
 
         // удаляем точки, под индексами 2 и 5
         func_array.deletePoint(2);
@@ -66,13 +62,9 @@ public class Main {
         func_list.deletePoint(2);
         func_list.deletePoint(5);
         for (int t = 0; t < func_list.getPointsCount(); t++) {
-            if (Math.abs(func_list.getPointX(t) - func_array.getPointX(t)) > DEFAULT_EPSILON) {
-                System.out.println("Значения X координат точек не совпали");
-            }
-            if (Math.abs(func_list.getPointY(t) - func_array.getPointY(t)) > DEFAULT_EPSILON) {
-                System.out.println("Значения Y координат точек не совпали");
-            }
+            System.out.printf("x_array=%.2f x_list=%.2f y_array=%.2f y_list=%.2f%n", func_array.getPointX(t), func_list.getPointX(t), func_array.getPointY(t), func_list.getPointY(t));
         }
+        System.out.println();
 
         // изменим значения точки 4 на {0.3;0.09}
         try {
@@ -84,13 +76,9 @@ public class Main {
             throw new RuntimeException(e);
         }
         for (int t = 0; t < func_list.getPointsCount(); t++) {
-            if (Math.abs(func_list.getPointX(t) - func_array.getPointX(t)) > DEFAULT_EPSILON) {
-                System.out.println("Значения X координат точек не совпали");
-            }
-            if (Math.abs(func_list.getPointY(t) - func_array.getPointY(t)) > DEFAULT_EPSILON) {
-                System.out.println("Значения Y координат точек не совпали");
-            }
+            System.out.printf("x_array=%.2f x_list=%.2f y_array=%.2f y_list=%.2f%n", func_array.getPointX(t), func_list.getPointX(t), func_array.getPointY(t), func_list.getPointY(t));
         }
+        System.out.println();
         //------------------------------------------------------------------------------------------------------------
     }
 }

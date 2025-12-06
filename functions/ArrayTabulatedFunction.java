@@ -45,7 +45,7 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
     public double getFunctionValue(double x) {
         if (x < array[0].getX() || x > array[capacity - 1].getX()) {return Double.NaN;}
         for (int t = 0; t < capacity; t++) {
-            if (x == array[t].getX()) {return array[t].getY();}
+            if (Math.abs(x - array[t].getX()) < DEFAULT_EPSILON) {return array[t].getY();}
         }
         int t = 0;
         while (x > array[t].getX()) {
