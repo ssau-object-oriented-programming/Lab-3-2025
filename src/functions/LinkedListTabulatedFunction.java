@@ -219,7 +219,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     /**
      * Возвращает узел по индексу (0..size-1) с оптимизацией за счет кэша.
      */
-    FunctionNode getNodeByIndex(int index) {
+    private FunctionNode getNodeByIndex(int index) {
         if (index < 0 || index >= size) {
             throw new FunctionPointIndexOutOfBoundsException("Index out of bounds: " + index);
         }
@@ -263,7 +263,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     /**
      * Добавляет узел в конец (перед головой) и возвращает его.
      */
-    FunctionNode addNodeToTail() {
+    private FunctionNode addNodeToTail() {
         FunctionNode node = new FunctionNode(null);
         insertBefore(head, node);
         return node;
@@ -289,7 +289,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
      * Добавляет узел по индексу (0..size) и возвращает его.
      * Если index == size — вставка в хвост.
      */
-    FunctionNode addNodeByIndex(int index) {
+    private FunctionNode addNodeByIndex(int index) {
         if (index < 0 || index > size) {
             throw new FunctionPointIndexOutOfBoundsException("Index out of bounds: " + index);
         }
@@ -309,7 +309,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     /**
      * Удаляет узел по индексу и возвращает его (узел отсоединён).
      */
-    FunctionNode deleteNodeByIndex(int index) {
+    private FunctionNode deleteNodeByIndex(int index) {
         FunctionNode node = getNodeByIndex(index);
         unlink(node);
         if (cachedNode == node) {
