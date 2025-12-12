@@ -207,6 +207,7 @@ public class Main {
     
     private static void testValidOperations(TabulatedFunction function) {
     System.out.println("\n Тест корректных операций ");
+    System.out.println("Исходная функция: " + function);
     
     try {
         // Проверяем границы области определения
@@ -214,44 +215,70 @@ public class Main {
         System.out.println("Правая граница: " + function.getRightDomainBorder());
         
         // Получаем и устанавливаем Y координату
-        System.out.println("координата точки 1: " + function.getPointY(1));
+        System.out.println("\n1. Тест изменения Y координаты:");
+        System.out.println("Y координата точки 1 до изменения: " + function.getPointY(1));
+        System.out.println("Функция до изменения: " + function);
         function.setPointY(1, 15.0);
-        System.out.println("координата точки 1 после setPointY: " + function.getPointY(1));
+        System.out.println("Y координата точки 1 после setPointY(1, 15.0): " + function.getPointY(1));
+        System.out.println("Функция после изменения: " + function);
         
         // Получаем точку
         FunctionPoint point = function.getPoint(2);
-        System.out.println("Точка 2: " + point);
+        System.out.println("\n2. Получение точки 2: " + point);
         
         // Получаем значения функции в разных точках
+        System.out.println("\n3. Значения функции в точках:");
         System.out.println("f(2.5) = " + function.getFunctionValue(2.5));
         System.out.println("f(5.0) = " + function.getFunctionValue(5.0));
         System.out.println("f(15.0) = " + function.getFunctionValue(15.0)); // Вне области определения
         System.out.println("f(-5.0) = " + function.getFunctionValue(-5.0)); // Вне области определения
         
         // Изменяем X координату корректно - используем предпоследнюю точку
+        System.out.println("\n4. Тест изменения X координаты:");
         int lastIndex = function.getPointsCount() - 1;
         int pointToChange = Math.max(0, lastIndex - 1); // Предпоследняя или первая
-        double newX = function.getPointX(pointToChange) + 0.1;
+        System.out.println("Изменяем точку с индексом " + pointToChange);
+        System.out.println("Функция до изменения X: " + function);
+        double oldX = function.getPointX(pointToChange);
+        double newX = oldX + 0.1;
         function.setPointX(pointToChange, newX);
-        System.out.println("координата точки " + pointToChange + " после корректного изменения: " + function.getPointX(pointToChange));
+        System.out.println("X координата точки " + pointToChange + " изменена с " + oldX + " на " + newX);
+        System.out.println("Функция после изменения X: " + function);
         
-        // Добавляем еще одну точку (только если это не LinkedListTabulatedFunction с null)
-        if (!function.getClass().getSimpleName().equals("LinkedListTabulatedFunction")) {
-            function.addPoint(new FunctionPoint(4.5, 20.0));
-            System.out.println("Добавлена новая точка, теперь точек: " + function.getPointsCount());
-        }
+        // Добавляем новую точку
+        System.out.println("\n5. Тест добавления новой точки:");
+        System.out.println("Функция до добавления: " + function);
+        System.out.println("Количество точек до добавления: " + function.getPointsCount());
+        FunctionPoint newPoint = new FunctionPoint(4.5, 20.0);
+        function.addPoint(newPoint);
+        System.out.println("Добавлена точка: " + newPoint);
+        System.out.println("Функция после добавления: " + function);
+        System.out.println("Количество точек после добавления: " + function.getPointsCount());
         
         // Удаляем точку (если осталось больше 3 точек)
+        System.out.println("\n6. Тест удаления точки:");
         if (function.getPointsCount() > 3) {
+            System.out.println("Функция до удаления: " + function);
+            System.out.println("Количество точек до удаления: " + function.getPointsCount());
+            System.out.println("Удаляем точку с индексом 1: " + function.getPoint(1));
             function.deletePoint(1);
-            System.out.println("Удалена точка 1, теперь точек: " + function.getPointsCount());
+            System.out.println("Функция после удаления: " + function);
+            System.out.println("Количество точек после удаления: " + function.getPointsCount());
+        } else {
+            System.out.println("Нельзя удалить точку - осталось только " + function.getPointsCount() + " точки");
         }
         
-        System.out.println("Все корректные операции выполнены успешно");
+        // Выводим все точки по порядку
+        System.out.println("\n7. Все точки функции:");
+        for (int i = 0; i < function.getPointsCount(); i++) {
+            System.out.println("  Точка " + i + ": " + function.getPoint(i));
+        }
+        
+        System.out.println("\nВсе корректные операции выполнены успешно");
         
     } catch (Exception e) {
         System.out.println("ОШИБКА в корректных операциях: " + e.getMessage());
-        // e.printStackTrace(); // Можно закомментировать для чистоты вывода
+        e.printStackTrace();
     }
 }
     

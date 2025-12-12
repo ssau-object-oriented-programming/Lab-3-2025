@@ -255,12 +255,12 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
                 double y1 = currentNode.getPoint().getY();
                 double y2 = nextNode.getPoint().getY();
                 
-                if (x > x1 - EPSILON && x < x1 + EPSILON) {
+                if (Math.abs(x - x1) < EPSILON) {
                     // Обновляем кэш для оптимизации будущих вызовов
                     lastAccessedNode = currentNode;
                     return y1;
                 }
-                if (x > x2 - EPSILON && x < x2 + EPSILON) {
+                if (Math.abs(x - x2) < EPSILON) {
                     lastAccessedNode = nextNode;
                     return y2;
                 }

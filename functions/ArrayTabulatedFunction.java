@@ -69,10 +69,10 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
                 double y2 = points[i + 1].getY();
                 
                 // Проверка на точное совпадение с граничными точками
-                if (x > x1 - EPSILON && x < x1 + EPSILON) {
+                if (Math.abs(x - x1) < EPSILON) {
                     return y1;
                 }
-                if (x > x2 - EPSILON && x < x2 + EPSILON) {
+                if (Math.abs(x - x2) < EPSILON) {
                     return y2;
                 }
                 
