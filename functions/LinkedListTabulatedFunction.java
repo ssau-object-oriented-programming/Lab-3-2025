@@ -16,19 +16,20 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     private FunctionNode lastAccessedNode;
     private int lastAccessedIndex;
     
-    public LinkedListTabulatedFunction(double leftX, double rightX, int pointCount) throws IllegalArgumentException {
+  public LinkedListTabulatedFunction(double leftX, double rightX, int pointCount) throws IllegalArgumentException {
     if (leftX >= rightX || pointCount < 2) {
         throw new IllegalArgumentException("Invalid parameters: leftX must be less than rightX and pointCount >= 2");
     }
     
     initHead();
-    this.size = 0;  // Начинаем с 0, будем увеличивать при добавлении
+    this.size = 0;
     
     double step = (rightX - leftX) / (pointCount - 1);
     for (int i = 0; i < pointCount; i++) {
         double x = leftX + i * step;
+        double y = Math.sin(x); // или другая функция
         FunctionNode newNode = addNodeToTail();
-        newNode.point = new FunctionPoint(x, 0);
+        newNode.point = new FunctionPoint(x, y);
     }
     
     lastAccessedNode = (size > 0) ? head.next : head;

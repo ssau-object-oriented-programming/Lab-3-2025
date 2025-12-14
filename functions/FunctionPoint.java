@@ -43,12 +43,13 @@ public class FunctionPoint {
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        FunctionPoint that = (FunctionPoint) obj;
-        return equals(this.x, that.x) && equals(this.y, that.y);
-    }
-    
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+    FunctionPoint that = (FunctionPoint) obj;
+    //Double.compare
+    return Double.compare(this.x, that.x) == 0 && 
+           Double.compare(this.y, that.y) == 0;
+}
     @Override
     public int hashCode() {
         long xBits = Double.doubleToLongBits(x);

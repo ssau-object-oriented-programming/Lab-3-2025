@@ -5,19 +5,20 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
     private int pointCount;
     
     public ArrayTabulatedFunction(double leftX, double rightX, int pointCount) throws IllegalArgumentException {
-        if (leftX >= rightX || pointCount < 2) {
-            throw new IllegalArgumentException("Invalid parameters: leftX must be less than rightX and pointCount >= 2");
-        }
-        
-        this.pointCount = pointCount;
-        this.points = new FunctionPoint[pointCount + 10]; // extra capacity
-        
-        double step = (rightX - leftX) / (pointCount - 1);
-        for (int i = 0; i < pointCount; i++) {
-            double x = leftX + i * step;
-            points[i] = new FunctionPoint(x, 0);
-        }
+    if (leftX >= rightX || pointCount < 2) {
+        throw new IllegalArgumentException("Invalid parameters: leftX must be less than rightX and pointCount >= 2");
     }
+    
+    this.pointCount = pointCount;
+    this.points = new FunctionPoint[pointCount + 10];
+    
+    double step = (rightX - leftX) / (pointCount - 1);
+    for (int i = 0; i < pointCount; i++) {
+        double x = leftX + i * step;
+        double y = Math.sin(x); // или любая другая функция, например x*x
+        points[i] = new FunctionPoint(x, y);
+    }
+}
     
     public ArrayTabulatedFunction(double[] xValues, double[] yValues) throws IllegalArgumentException {
         if (xValues.length < 2 || xValues.length != yValues.length) {
@@ -111,25 +112,32 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
     }
     
     @Override
-    public double getFunctionValue(double x) {
-        if (x < points[0].getX() || x > points[pointCount - 1].getX()) {
-            return Double.NaN;
-        }
-        
-        for (int i = 0; i < pointCount - 1; i++) {
-            if (x >= points[i].getX() && x <= points[i + 1].getX()) {
-                // linear interpolation
-                double x1 = points[i].getX();
-                double y1 = points[i].getY();
-                double x2 = points[i + 1].getX();
-                double y2 = points[i + 1].getY();
-                
-                return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
-            }
-        }
-        
+public double getFunctionValue(double x) {
+    if (x < points[0].getX() || x > points[pointCount - 1].getX()) {
         return Double.NaN;
     }
+    
+    // Проверка на точное совпадение с существующей точкой
+    for (int i = 0; i < pointCount; i++) {
+        if (Double.compare(points[i].getX(), x) == 0) {
+            return points[i].getY(); 
+        }
+    }
+    
+    // Линейная интерполяция
+    for (int i = 0; i < pointCount - 1; i++) {
+        if (x >= points[i].getX() && x <= points[i + 1].getX()) {
+            double x1 = points[i].getX();
+            double y1 = points[i].getY();
+            double x2 = points[i + 1].getX();
+            double y2 = points[i + 1].getY();
+            
+            return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+        }
+    }
+    
+    return Double.NaN;
+}
     
     @Override
     public void addPoint(FunctionPoint point) throws InappropriateFunctionPointException {

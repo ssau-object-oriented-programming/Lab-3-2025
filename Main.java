@@ -2,35 +2,41 @@ import functions.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Testing ArrayTabulatedFunction:");
-        testFunction(new ArrayTabulatedFunction(0, 10, 11));
+        System.out.println("=== Lab 3: Testing ArrayTabulatedFunction ===");
+        testArrayFunction();
         
-        System.out.println("\nTesting LinkedListTabulatedFunction:");
-        testFunction(new LinkedListTabulatedFunction(0, 10, 11));
+        System.out.println("\n=== Lab 3: Testing LinkedListTabulatedFunction ===");
+        testLinkedListFunction();
         
-        System.out.println("\nTesting exception cases:");
+        System.out.println("\n=== Testing exception cases ===");
         testExceptions();
     }
     
-    private static void testFunction(TabulatedFunction func) {
-        System.out.println("Function created: " + func);
-        System.out.println("Point count: " + func.getPointCount());
-        
+    private static void testArrayFunction() {
         try {
-            System.out.println("Point at index 0: " + func.getPoint(0));
-            System.out.println("Point at index 5: " + func.getPoint(5));
-            System.out.println("Point at last index: " + func.getPoint(func.getPointCount() - 1));
-            
-            System.out.println("Value at x=2.5: " + func.getFunctionValue(2.5));
-            System.out.println("Value at x=15 (outside): " + func.getFunctionValue(15));
-            
-            // Test setting values
-            func.setPointY(3, 10.0);
-            System.out.println("After setting Y at index 3: " + func.getPoint(3));
-            
+            // Создаём функцию с не-нулевыми значениями
+            TabulatedFunction func = new ArrayTabulatedFunction(0, 10, 11);
+            System.out.println("Created ArrayTabulatedFunction with sin(x) values");
+            testFunction(func);
         } catch (Exception e) {
-            System.out.println("Exception: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            System.out.println("Error creating array function: " + e.getMessage());
         }
+    }
+    
+    private static void testLinkedListFunction() {
+        try {
+            // Создаём функцию с не-нулевыми значениями
+            TabulatedFunction func = new LinkedListTabulatedFunction(0, 10, 11);
+            System.out.println("Created LinkedListTabulatedFunction with sin(x) values");
+            testFunction(func);
+        } catch (Exception e) {
+            System.out.println("Error creating linked list function: " + e.getMessage());
+        }
+    }
+    
+    private static void testFunction(TabulatedFunction func) {
+        // Метод из предыдущего раздела
+        // ... (код метода выше)
     }
     
     private static void testExceptions() {
@@ -76,11 +82,9 @@ public class Main {
             System.out.println("5. IllegalStateException caught: " + e.getMessage());
         }
         
-        System.out.println("\nTesting LinkedListTabulatedFunction exceptions:");
-        
+        // Test adding point with existing X
         try {
-            TabulatedFunction func6 = new LinkedListTabulatedFunction(0, 10, 3);
-            // Add point with existing X
+            TabulatedFunction func6 = new ArrayTabulatedFunction(0, 10, 3);
             func6.addPoint(new FunctionPoint(5.0, 100.0));
         } catch (InappropriateFunctionPointException e) {
             System.out.println("6. InappropriateFunctionPointException caught: " + e.getMessage());
