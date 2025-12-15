@@ -164,22 +164,29 @@ public double getFunctionValue(double x) {
         points[position] = (FunctionPoint) point.clone();
         pointCount++;
     }
-    
-    @Override
-    public void deletePoint(int index) throws FunctionPointIndexOutOfBoundsException, IllegalStateException {
-        checkIndex(index);
-        
-        if (pointCount < 3) {
-            throw new IllegalStateException("Cannot delete point: minimum 3 points required");
-        }
-        
-        for (int i = index; i < pointCount - 1; i++) {
-            points[i] = points[i + 1];
-        }
-        
-        points[pointCount - 1] = null;
-        pointCount--;
+   @Override
+public void deletePoint(int index) {
+    // ВАЖНО: СНАЧАЛА проверяем количество точек!
+    // Если точек 2 или меньше - нельзя удалять ВООБЩЕ
+    if (pointCount <= 2) {
+        throw new IllegalStateException("Cannot delete point: minimum 3 points required");
     }
+    
+    // ТОЛЬКО ПОТОМ проверяем индекс
+    if (index < 0 || index >= pointCount) {
+        throw new FunctionPointIndexOutOfBoundsException(
+            "Function point index out of bounds: " + index
+        );
+    }
+    
+    // Удаление точки
+    for (int i = index; i < pointCount - 1; i++) {
+        points[i] = points[i + 1];
+    }
+    
+    pointCount--;
+    points[pointCount] = null;
+}
     
     @Override
     public String toString() {

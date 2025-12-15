@@ -272,15 +272,39 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         newNode.point = (FunctionPoint) point.clone();
     }
     
-    @Override
-    public void deletePoint(int index) throws FunctionPointIndexOutOfBoundsException, IllegalStateException {
-        if (size < 3) {
-            throw new IllegalStateException("Cannot delete point: minimum 3 points required");
-        }
-        
-        deleteNodeByIndex(index);
+ @Override
+public void deletePoint(int index) {
+    // ВАЖНО: СНАЧАЛА проверяем количество точек!
+    // Если точек 2 или меньше - нельзя удалять ВООБЩЕ
+    if (size <= 2) {
+        throw new IllegalStateException("Cannot delete point: minimum 3 points required");
     }
     
+    // ТОЛЬКО ПОТОМ проверяем индекс
+    if (index < 0 || index >= size) {
+        throw new FunctionPointIndexOutOfBoundsException(
+            "Function point index out of bounds: " + index
+        );
+    }
+    
+    // Получаем узел для удаления
+    FunctionNode nodeToDelete = getNodeByIndex(index);
+    
+    // Перестраиваем связи
+    nodeToDelete.prev.next = nodeToDelete.next;
+    nodeToDelete.next.prev = nodeToDelete.prev;
+    
+    // Уменьшаем счетчик
+    size--;
+    
+    // Обновляем кэш
+    if (lastAccessedNode == nodeToDelete) {
+        lastAccessedNode = (size > 0) ? head.next : head;
+        lastAccessedIndex = 0;
+    } else if (index < lastAccessedIndex) {
+        lastAccessedIndex--;
+    }
+}
     @Override
 public String toString() {
     StringBuilder sb = new StringBuilder();
